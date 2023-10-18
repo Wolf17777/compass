@@ -78,7 +78,7 @@ def handle_request(request):
 
     if private_keys==None:
         # Passphrase was invalid
-        return JsonResponse({'passphrase_invalid':1})
+        return JsonResponse({'passphrase_invalid':1, 'key2_pub':key_setup.key2_public})
 
     # Note that past this point user_id is verified by the passphrase, i.e. sensitive data is never returned otherwise
     # make sure the rest of the script only uses password objects belonging to the correct user_id
