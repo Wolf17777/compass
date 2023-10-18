@@ -1,5 +1,5 @@
 # compass
-A password manager developed with a paranoid security approach.
+A password manager developed with a paranoid security approach. Read more about it <a href="https://www.comonoid.com/blog/post/?id=3" target="_blank">here</a>.
 
 
 # Installing
@@ -15,6 +15,7 @@ You must configure Django such that when a browser requests a path that points t
 
 ```python
 from django.shortcuts import render
+# request path '/your_compass_path/'
 def index(request, path):
     context = {
         'user_info': {
@@ -26,9 +27,10 @@ def index(request, path):
     return response
 ```
 
-Moreover, it is important that a post request for `/your_compass_path/server/` returns as a response the one that the function `handle_request(...)` inside the file `server/index.py` of the Colide root folder returns. This function take only the request as a parameter. The code for this can look something like this.
+Moreover, it is important that a post request for `/your_compass_path/server/` returns as a response the one that the function `handle_request(...)` inside the file `server/index.py` of the Compass root folder returns. This function takes only the request as a parameter. The code for this can look something like this.
 ```python
 from compass.server import index # change the path accordingly
+# POST request of path '/your_compass_path/server/'
 def index(request, path):
     return index.handle_request(request)
 ```
