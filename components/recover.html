@@ -1,0 +1,74 @@
+<div id='div-recover' class='d-none'>
+    <h5 class="modal-title">New device setup / Recovery</h5>
+    <p>To setup this device or recover your passwords enter your private key. The key can be obtained from any setup instance of this password manager, if it was not already backed up somewhere.<p>
+    <form>
+        <textarea class="form-control" id="input_recover_key" rows=8></textarea>
+        <input type="file" id='input_upload_private_key' class="form-control" onchange="upload_private_key()" />
+        <button type="submit" class="btn btn-dark col-12 position-relative mt-2">
+            Submit
+        </button>
+    </form>
+</div>
+
+<script>
+$('#div-recover').find('form').on('submit', function(){ recover_submit();return false; })
+
+function upload_private_key() {
+    var reader = new FileReader();
+
+    reader.onload = function(evt) {
+        if(evt.target.readyState != 2) return;
+        if(evt.target.error) {
+            alert('Error while reading file.');
+            return;
+        }
+
+        filecontent = evt.target.result;
+
+        $('#input_recover_key').val(filecontent);
+    };
+
+    reader.readAsText($("#input_upload_private_key").prop('files')[0]);
+}
+
+async function recover_submit() {
+    
+    if(processing) return false;
+
+    try {
+        let privateKey = await importPrivateKey($('#input_recover_key').val());
+        let publicKey = await publicKeyFromPrivateKey(privateKey);
+        compass_config[compass_config.current_user_id]['local_privkey'] = await exportPrivateKey(privateKey);
+        compass_config[compass_config.current_user_id]['local_pubkey'] = await exportPublicKey(publicKey);
+    } catch (error) {
+        add_alert('Private key invalid.', 'danger');
+        $("#input_upload_private_key").val("");
+        $("#load_spinner").removeClass("active");
+        processing = false;
+        return false;
+    }
+    server_api("pubkeys",{}, async function( data ) {
+        if (data.error != undefined) {
+            add_alert(data.error, 'danger');
+        //} else if (data.passphrase_invalid != null) {
+        //    passphrase_prepare();
+        } else if (data.local_secret != null) {
+            abc=data.local_secret
+            compass_config[compass_config.current_user_id]['server_pubkey1'] = data.key1_pub;
+            compass_config[compass_config.current_user_id]['server_pubkey2'] = data.key2_pub;
+            if (await check_local_secret(data.local_secret)) {
+                $('#div-recover').addClass('d-none');
+                save_config();
+                search_show();
+            } else {
+                add_alert('Private key broken.', 'danger');
+                $("#input_upload_private_key").val("");
+            }
+        } else {
+            add_alert('Internal server error.', 'danger');
+            $("#input_upload_private_key").val("");
+        }
+    });
+    return false;
+}
+</script>

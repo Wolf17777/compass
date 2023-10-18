@@ -1,0 +1,42 @@
+<div id='div-totp_setup' class='my-4 d-none'>
+    <h5 class="modal-title">First time setup</h5>
+    <form>
+        <div class="">
+            <p>Scan the QR code with an authenticator app and enter a one time password below. You will need such a code everytime you want to access a password.</p>
+            <div><div id="qrcode" class="qrcode mx-auto mb-2"></div></div>
+        </div>        
+        <div class="">
+            {% include './forms/pincode.html' with component_id='input_totp_setup' pincode_label='' %}
+        </div>
+        <button type="submit" class="btn btn-dark col-12 position-relative input_totp_setup_target">
+            Submit
+        </button>
+    </form>
+</div>
+
+<script>
+$('#div-totp_setup').find('form').on('submit', function(){ totp_setup_submit();return false; })
+
+async function totp_setup_prepare() {
+    // show totp qr code to user
+    check_setup = false;
+    $('#div-totp_setup').removeClass('d-none');
+}
+async function totp_setup_submit() {
+    server_api("setup", {'step': 'set_active', 'totp_pin': await encrypt_server_key1($('#input_totp_setup').val())}, async function( data ) {
+        if (data.error != undefined) {
+            add_alert(data.error, 'danger');
+        } else if (data.passphrase_invalid != null) {
+            passphrase_prepare();
+        } else if (data.key1_pub != null) {
+            $('#div-totp_setup').addClass('d-none');
+            save_config();
+            search_show();
+            show_private_key();
+        } else {
+            add_alert('Internal server error.', 'danger');
+        }
+    });
+    return false;
+}
+</script>

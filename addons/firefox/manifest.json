@@ -1,0 +1,36 @@
+{
+    "manifest_version": 2,
+    "name": "compass",
+    "version": "1.0",
+
+    "description": "Password manager extension for Compass.",
+    "homepage_url": "https://www.comonoid.com/compass/",
+    "icons": {
+        "32": "favicon-32x32.png"
+    },
+
+    "permissions": ["activeTab","tabs","storage"],
+    "content_security_policy": "script-src 'self' https://www.comonoid.com; object-src 'self' https://www.comonoid.com; default-src 'self' https://www.comonoid.com 'unsafe-inline';",
+
+    "browser_action": {
+        "default_icon": "favicon-32x32.png",
+        "default_title": "compass",
+        "default_popup": "popup_build/popup.html"
+    },
+    
+    "background": {
+        "page": "background-page.html",
+        "persistent": false
+    },
+    
+    "content_scripts": [
+        {
+          "matches": ["*://*/*"],
+          "js": ["input_apply.js"]
+        },
+        {
+          "matches": ["https://www.comonoid.com/compass/"],
+          "js": ["fetch_from_site.js"]
+        }
+    ]
+}

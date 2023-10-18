@@ -1,0 +1,53 @@
+<div class="modal fade" id="modal-change_passphrase" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Change passphrase</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form>
+        <div class="modal-body">
+            {% include '../forms/new_password.html' with component_id='change_passphrase_new' input_password_label='New passphrase' check_valid='false' %}
+            <p></p>
+            {% include '../forms/pincode.html' with component_id='change_passphrase_totp' pincode_label='Enter your current one time password.' %}
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary change_passphrase_totp_target">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+$('#modal-change_passphrase').find('form').on('submit', function(){ change_passphrase_submit();return false; })
+
+function change_passphrase_prepare() {
+    $('#modal-change_passphrase').find('input').val('');
+    $('#modal-change_passphrase').modal('show');
+}
+
+temp_passphrase_enc = ''
+async function change_passphrase_submit() {
+    $('#modal-change_passphrase').modal('hide');
+
+    temp_passphrase_enc = await encrypt_server_key2($('#change_passphrase_new').val());
+
+    server_api("change_passphrase", { 'new_passphrase':temp_passphrase_enc, 'totp_pin': await encrypt_server_key1($('#change_passphrase_totp').val()) }, async function( data ) {
+        if (data.error != undefined) {
+            add_alert(data.error, 'danger');
+        } else if (data.passphrase_invalid != null) {
+            passphrase_prepare();
+        } else if (data.success != null) {
+            $('#modal-change_passphrase').find('input').val('');
+            add_passphrase_enc_session(temp_passphrase_enc);
+            temp_passphrase_enc = '';
+            add_alert('Changed the passphrase.', 'success');
+        } else {
+            add_alert('Internal server error.', 'danger');
+        }
+        
+    });
+    return false;
+}
+</script>

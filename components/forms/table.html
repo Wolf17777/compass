@@ -1,0 +1,70 @@
+{% extends '../base_component.html' %}
+
+{% block css %}
+<style>
+    {% include 'res/css/bootstrap-table.min.css' %}
+</style>
+<script>
+  {% include 'res/js/bootstrap-table.min.js' %}
+</script>
+{% endblock %}
+
+{% block script_global %}
+<script>
+function initTable(tableid, rows, columns=undefined) {
+    if (columns == undefined) {
+        columns = []
+        for (key in rows[0]) {
+            columns.push({ field: key, title: key, sortable: true });
+        }
+    }
+    let $table = $('#'+tableid);
+    $table.bootstrapTable('destroy').bootstrapTable({
+        columns: columns,
+        data: rows
+    });
+}
+</script>
+{% endblock %}
+
+{% block html %}
+<table
+  id="{{component_id}}"
+  data-toolbar="#{{component_id}}_toolbar"
+  data-search="{{enable_search|default:'true'}}"
+  data-pagination="true"
+  data-id-field="id"
+  data-page-list="[10, 25, 50, 100, all]">
+</table>
+{% endblock %}
+
+{% block script_local %}
+{% if table_rows %}
+<script>
+{% if table_columns %}
+columns = [
+    {% for field,title in table_columns %}
+    { field: "{{field}}", title: "{{title}}", sortable: true },
+    {% endfor %}
+]
+{% else %}
+// get columns from first row
+columns = [
+    {% for key in table_rows.0 %}
+    { field: "{{key}}", title: "{{key}}", sortable: true },
+    {% endfor %}
+]
+{% endif %}
+rows = [
+    {% for row in table_rows %}
+    { 
+        {% for key,val in row.items %}
+            "{{key}}": "{{val}}"
+        {% endfor %}
+    },
+    {% endfor %}
+]
+initTable("{{component_id}}", columns, rows);
+</script>
+{% endif %}
+{% endblock %}

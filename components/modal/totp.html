@@ -1,0 +1,26 @@
+<div class="modal fade" id="modal-totp" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Two factor authentication</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form>
+        <div class="modal-body">
+            {% include '../forms/pincode.html' with component_id='input_totp' pincode_label='Enter your current one time password.' %}
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary input_totp_target">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+$('#modal-totp').find('form').on('submit', function(){ get_password_submit();return false; })
+
+document.getElementById('modal-totp').addEventListener('shown.bs.modal', event => {
+  $('#input_totp_pin_container').find('input')[0].focus();
+});
+</script>

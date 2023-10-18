@@ -1,0 +1,28 @@
+{% include "res/css/header.css" %}
+{% include "res/css/spinner.css" %}
+
+html {
+    scroll-behavior: auto !important;
+}
+
+body {
+    min-height: 100vh;
+    overflow-y: scroll;
+}
+
+.alert_div {
+    margin-top: 1rem;
+    position: absolute;
+    right: 0;
+    z-index: 999;
+}
+
+.bi {
+fill: currentColor;
+}
+
+.qrcode {
+  width:max-content;
+}
+
+

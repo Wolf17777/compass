@@ -1,0 +1,23 @@
+{% if component_init %}
+    {% block css %}
+
+    {% endblock %}
+    
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    {% block svg_shortcuts %}
+    {% endblock %}
+    </svg>
+    
+    {% block script_global %}
+
+    {% endblock %}
+
+{% else %}
+    {% block html %}
+
+    {% endblock %}
+
+    {% block script_local %}
+
+    {% endblock %}
+{% endif %}

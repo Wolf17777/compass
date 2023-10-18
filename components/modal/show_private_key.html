@@ -1,0 +1,55 @@
+<div class="modal fade" id="modal-show_private_key" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Private key</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>If you want to setup this password manager on a new device you will need this private key. This private key is not stored on our servers. Without it, you are not able to decrypt any of your passwords. It is recommended to save it on a USB drive.</p>
+            <textarea class="form-control" id="show_private_key_textarea" rows=8 readonly></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-dark">Copy to clipboard</button>
+            <button class="btn btn-primary">Download</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function copy_private_key() {
+    let button=$(this); //$('#'+elemid);
+    
+    button.removeClass('btn-dark');
+    button.addClass('btn-success');
+    button.html('Copied!')
+    setTimeout( function() { 
+        button.removeClass('btn-success');
+        button.addClass('btn-dark');
+        button.html('Copy to clipboard')
+    }, 3000);
+    
+    navigator.clipboard.writeText(compass_config[compass_config.current_user_id]['local_privkey']);
+}
+function download_private_key() {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(compass_config[compass_config.current_user_id]['local_privkey']));
+    element.setAttribute('download', 'compass-private-key.asc');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+function show_private_key() {
+    $('#show_private_key_textarea').val(compass_config[compass_config.current_user_id]['local_privkey'])
+    $('#modal-show_private_key').modal('show');
+}
+
+$('#modal-show_private_key').find('.modal-footer').find('.btn-dark').on('click', copy_private_key);
+$('#modal-show_private_key').find('.modal-footer').find('.btn-primary').on('click', download_private_key);
+</script>
