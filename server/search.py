@@ -9,7 +9,7 @@ def process(data, private_keys, local_public_key, passwords):
     skey1 = private_keys[0]
 
     search_string = crypto.decrypt(skey1,data['search_string'])
-    pws = passwords.filter(url__contains=search_string) | passwords.filter(name__contains=search_string) 
+    pws = passwords.filter(url__icontains=search_string) | passwords.filter(name__icontains=search_string) 
     # WHERE url LIKE CONCAT('%', search_string, '%') OR name LIKE CONCAT('%', search_string, '%');
     found_passwords=[]
     for pw in pws:
